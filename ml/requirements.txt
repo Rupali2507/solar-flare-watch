@@ -10,4 +10,5 @@ optuna
 jupyter 
 notebook
 ipykernel
+pyarrow
 
