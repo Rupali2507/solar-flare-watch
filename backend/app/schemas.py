@@ -27,3 +27,6 @@ class PredictionResponse(BaseModel):
     flare_probability: float
     lead_time_mins: float
     nowcast_active: bool
+    source: str | None = None
+    peak_counts_in_window: float | None = None
+    triggered_rows_in_window: int | None = None

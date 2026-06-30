@@ -44,22 +44,24 @@ def predict():
     signal = get_latest_nowcast_signal()
 
     if signal["source"] == "no_data":
-        # no real data yet — fall back to dummy random score
         probability = round(random.uniform(0, 1), 3)
         return PredictionResponse(
             status="success",
             flare_probability=probability,
             lead_time_mins=round(random.uniform(5, 30), 1),
             nowcast_active=probability > 0.7,
+            source="mock_random",
         )
 
     return PredictionResponse(
         status="success",
         flare_probability=signal["flare_probability"],
-        lead_time_mins=0.0,  # no real lead-time forecast yet — rule-based detection only, not predictive
+        lead_time_mins=0.0,
         nowcast_active=signal["nowcast_active"],
+        source=signal["source"],
+        peak_counts_in_window=signal["peak_counts_in_window"],
+        triggered_rows_in_window=signal["triggered_rows_in_window"],
     )
-
 
 @app.get("/api/flare_catalog", response_model=list[FlareOut])
 def get_flare_catalog(db: Session = Depends(get_db)):

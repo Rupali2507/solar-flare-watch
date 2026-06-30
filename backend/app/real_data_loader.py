@@ -29,19 +29,36 @@ def load_real_data() -> pd.DataFrame | None:
 
 
 def get_latest_nowcast_signal() -> dict:
-    """Pull the most recent rows and derive a crude live nowcast signal
-    from her real flare_candidate flag, until a trained model exists."""
+    """Pull the most recent rows and derive a nowcast signal from her
+    real flare_candidate flag, until a trained model exists."""
     df = load_real_data()
     if df is None or df.empty:
         return {"nowcast_active": False, "flare_probability": 0.0, "source": "no_data"}
 
-    recent = df.tail(60)  # ~last minute at 1s cadence
+    recent = load_full_recent_window()  # see helper below
+    if recent.empty:
+        return {"nowcast_active": False, "flare_probability": 0.0, "source": "no_data"}
+
     active = bool(recent["flare_candidate"].max())
-    # crude probability proxy: fraction of recent rows flagged as flare candidates
     probability = round(float(recent["flare_candidate"].mean()), 3)
+    peak_value = float(recent["COUNTS"].max())
+    triggered_count = int(recent["flare_candidate"].sum())
 
     return {
         "nowcast_active": active,
         "flare_probability": probability,
         "source": "rule_based_flare_candidate",
+        "peak_counts_in_window": round(peak_value, 1),
+        "triggered_rows_in_window": triggered_count,
+        "window_size": len(recent),
     }
+
+
+def load_full_recent_window(window_rows: int = 60) -> "pd.DataFrame":
+    """Loads the last N rows directly from the source columns needed
+    for nowcast scoring (kept separate from load_real_data's renamed
+    output so we always have COUNTS/flare_candidate available)."""
+    if not REAL_DATA_PATH.exists():
+        return pd.DataFrame()
+    df = pd.read_csv(REAL_DATA_PATH, usecols=["DATETIME", "COUNTS", "flare_candidate"])
+    return df.tail(window_rows)
