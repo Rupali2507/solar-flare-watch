@@ -97,8 +97,10 @@ def engineer_lightcurve_features(df: pd.DataFrame) -> pd.DataFrame:
 
     df["diff2"] = df["COUNTS"].diff(2)
 
-    df["gradient"] = np.gradient(
+    df["gradient"] = (
         df["COUNTS"]
+        -
+        df["COUNTS"].shift(1)
     )
 
     # ------------------------------------------------------
@@ -327,7 +329,9 @@ def engineer_lightcurve_features(df: pd.DataFrame) -> pd.DataFrame:
     # Cleanup
     # ------------------------------------------------------
 
-    df = df.bfill().ffill()
+    df = df.ffill()
+
+    df = df.fillna(0)
 
     return df
 

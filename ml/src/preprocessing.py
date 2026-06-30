@@ -114,6 +114,11 @@ def preprocess_lightcurve(df):
 
     df["DATETIME"] = pd.to_datetime(df["ISOT"])
 
+    # Force nanosecond precision
+    df["DATETIME"] = pd.DatetimeIndex(
+        df["DATETIME"].values.astype("datetime64[ns]")
+    )
+
     df = df.sort_values("DATETIME").reset_index(drop=True)
 
     return df
