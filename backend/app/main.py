@@ -3,6 +3,7 @@ import pandas as pd
 from pathlib import Path
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from .model_handler import run_inference
 
 from .db import init_db, get_db, Flare
 from .schemas import LiveDataPoint, FlareOut, PredictionResponse
@@ -41,9 +42,9 @@ def get_live_data(limit: int = 100):
 
 @app.post("/api/predict", response_model=PredictionResponse)
 def predict():
-    signal = get_latest_nowcast_signal()
+    result = run_inference()
 
-    if signal["source"] == "no_data":
+    if not result.get("flare_probability") and not result.get("nowcast_active"):
         probability = round(random.uniform(0, 1), 3)
         return PredictionResponse(
             status="success",
@@ -55,12 +56,12 @@ def predict():
 
     return PredictionResponse(
         status="success",
-        flare_probability=signal["flare_probability"],
-        lead_time_mins=0.0,
-        nowcast_active=signal["nowcast_active"],
-        source=signal["source"],
-        peak_counts_in_window=signal["peak_counts_in_window"],
-        triggered_rows_in_window=signal["triggered_rows_in_window"],
+        flare_probability=result["flare_probability"],
+        lead_time_mins=result["lead_time_mins"],
+        nowcast_active=result["nowcast_active"],
+        source=result["source"],
+        peak_counts_in_window=result.get("peak_counts_in_window"),
+        triggered_rows_in_window=result.get("triggered_rows_in_window"),
     )
 
 @app.get("/api/flare_catalog", response_model=list[FlareOut])
