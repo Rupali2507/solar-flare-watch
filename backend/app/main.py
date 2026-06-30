@@ -42,17 +42,8 @@ def get_live_data(limit: int = 100):
 
 @app.post("/api/predict", response_model=PredictionResponse)
 def predict():
-    result = run_inference()
 
-    if not result.get("flare_probability") and not result.get("nowcast_active"):
-        probability = round(random.uniform(0, 1), 3)
-        return PredictionResponse(
-            status="success",
-            flare_probability=probability,
-            lead_time_mins=round(random.uniform(5, 30), 1),
-            nowcast_active=probability > 0.7,
-            source="mock_random",
-        )
+    result = run_inference()
 
     return PredictionResponse(
         status="success",
@@ -60,6 +51,9 @@ def predict():
         lead_time_mins=result["lead_time_mins"],
         nowcast_active=result["nowcast_active"],
         source=result["source"],
+        confidence=result.get("confidence"),
+        severity=result.get("severity"),
+        tier=result.get("tier"),
         peak_counts_in_window=result.get("peak_counts_in_window"),
         triggered_rows_in_window=result.get("triggered_rows_in_window"),
     )

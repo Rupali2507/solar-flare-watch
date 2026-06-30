@@ -1,8 +1,11 @@
 import pandas as pd
 from pathlib import Path
 
-REAL_DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "aligned_dataset.csv"
-
+REAL_DATA_PATH = (
+    Path(__file__).resolve().parent.parent
+    / "data"
+    / "aligned_dataset.csv"
+)
 # Map her raw column names -> our API contract names.
 # Update the right-hand side once she renames things on her end.
 COLUMN_MAP = {
@@ -16,13 +19,25 @@ def load_real_data() -> pd.DataFrame | None:
     if not REAL_DATA_PATH.exists():
         return None
 
-    df = pd.read_csv(REAL_DATA_PATH, usecols=[
-        "DATETIME", "COUNTS", "flare_candidate", "is_peak", "peak_prominence"
-    ])
+    df = pd.read_parquet(REAL_DATA_PATH)
+
+    df = df.loc[
+        :,
+        [
+            "DATETIME",
+            "COUNTS",
+            "flare_candidate",
+            "is_peak",
+            "peak_prominence",
+        ]
+    ]
     df = df.rename(columns=COLUMN_MAP)
 
-    # hel1os_flux isn't in this file yet (spectral/2nd-detector data wasn't merged in) —
-    # placeholder until she sends a true dual-sensor merge.
+    df["timestamp"] = (
+        pd.to_datetime(df["timestamp"])
+        .dt.strftime("%Y-%m-%d %H:%M:%S")
+    )
+
     df["hel1os_flux"] = df["solexs_flux"]
 
     return df
@@ -54,11 +69,10 @@ def get_latest_nowcast_signal() -> dict:
     }
 
 
-def load_full_recent_window(window_rows: int = 60) -> "pd.DataFrame":
-    """Loads the last N rows directly from the source columns needed
-    for nowcast scoring (kept separate from load_real_data's renamed
-    output so we always have COUNTS/flare_candidate available)."""
+def load_full_recent_window(window_rows: int = 60):
     if not REAL_DATA_PATH.exists():
         return pd.DataFrame()
-    df = pd.read_csv(REAL_DATA_PATH, usecols=["DATETIME", "COUNTS", "flare_candidate"])
+
+    df = pd.read_parquet(REAL_DATA_PATH)
+
     return df.tail(window_rows)

@@ -1,17 +1,34 @@
-# Ignore massive raw datasets and archives
-*.zip
-*.fits
-*.fit
-*.gz
-
-# Ignore Python cache
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
 
-# Ignore environment variables
+# Virtual environments
+venv/
+.venv/
+
+# VS Code
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment
 .env
-backend/venv
-frontend/node_modules/
-frontend/dist/
-ml/data
-ml/venv
+.env.*
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# ML outputs (training artifacts only)
+ml/results/
+
+# Keep deployed backend assets
+!backend/data/trained_forecast_model.pkl
+!backend/data/aligned_dataset.csv
