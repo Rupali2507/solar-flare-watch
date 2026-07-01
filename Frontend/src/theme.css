@@ -1,0 +1,18 @@
+:root {
+  --bg: #171a20;
+  --card: #242831;
+  --card-alt: #2d323d;
+
+  --border: #3b4250;
+
+  --text: #f3f4f6;
+  --text-dim: #b4bbc7;
+  --text-faint: #7d8596;
+
+  --accent: #4f7cff;
+  --accent-soft: rgba(79,124,255,0.15);
+
+  --green: #4caf70;
+  --yellow: #d6a73c;
+  --red: #d65a5a;
+}

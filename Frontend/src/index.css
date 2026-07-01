@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #111820;
+  --bg-card: #141c24;
+  --bg-card-hover: #182030;
+  --border: #1e2d3d;
+  --border-bright: #2a3f52;
+  --text-primary: #e8edf2;
+  --text-secondary: #7a9ab5;
+  --text-muted: #4a6478;
+  --accent-cyan: #00d4e8;
+  --accent-gold: #c8a84b;
+  --accent-red: #e84040;
+  --accent-green: #2ecc71;
+  --accent-orange: #f39c12;
+  --x-class: #c8a84b;
+  --m-class: #e8a030;
+  --c-class: #7a9ab5;
+  --font-mono: 'Space Mono', monospace;
+  --font-body: 'Inter', sans-serif;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
