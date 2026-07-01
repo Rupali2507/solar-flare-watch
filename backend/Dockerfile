@@ -21,4 +21,4 @@ COPY seed_data.py .
 EXPOSE 8000
 
 # Railway provides the PORT environment variable
-CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+CMD sh -c "python detect_real_flares.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
